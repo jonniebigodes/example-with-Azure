@@ -23,10 +23,10 @@ jobs:
       restoreKeys: |
         yarn | "$(Agent.OS)"
       path: $(YARN_CACHE_FOLDER)
-    - script: yarn --frozen-lockfile
+  - script: yarn --frozen-lockfile
 
 - job: Test
-  displayName: Install and Cache Dependencies
+  displayName: Testing job
   dependsOn: Install
   condition: succeeded()
   steps:
