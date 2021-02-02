@@ -1,21 +1,44 @@
-# Node.js
-# Build a general Node.js project with npm.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+## Example azure-pipelines.yml
 
+## trigger (branch which will trigger the pipeline)
 trigger:
 - main
 
+# Environment variables created for Chromatic
+variables:
+- group: chromatic-keys
+- YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
+
+## OS where the pipeline will run
 pool:
   vmImage: 'ubuntu-latest'
 
-steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '12.x'
-  displayName: 'Install Node.js'
+jobs:
+- job: Install
+  displayName: Install and Cache Dependencies
+  steps:
+  - task: Cache@2
+    inputs:
+      key: 'yarn | "$(Agent.OS)" | yarn.lock'
+      restoreKeys: |
+        yarn | "$(Agent.OS)"
+      path: $(YARN_CACHE_FOLDER)
+    - script: yarn --frozen-lockfile
 
-- script: |
-    npm install
-    npm run build
-  displayName: 'npm install and build'
+- job: Test
+  displayName: Install and Cache Dependencies
+  dependsOn: Install
+  condition: succeeded()
+  steps:
+    - task: Testing
+      displayName: Testing
+    - script: yarn test
+
+- job: Chromatic
+  displayName: Publish to Chromatic
+  dependsOn: Install
+  condition: succeeded()
+  steps:
+  - script: yarn chromatic --project-token=${CHROMATIC_PROJECT_TOKEN}
+  
+
