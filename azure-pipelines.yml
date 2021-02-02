@@ -31,9 +31,8 @@ jobs:
   dependsOn: Install
   condition: succeeded()
   steps:
-    - task: Testing
-      displayName: Testing
     - script: yarn test
+      displayName: Testing
 
 - job: Chromatic
   displayName: Publish to Chromatic
