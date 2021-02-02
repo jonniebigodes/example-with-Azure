@@ -7,7 +7,6 @@ trigger:
 # Environment variables created for Chromatic
 variables:
 - group: chromatic-keys
-  YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
 
 ## OS where the pipeline will run
 pool:
@@ -16,6 +15,8 @@ pool:
 jobs:
 - job: Install
   displayName: Install and Cache Dependencies
+  variables:
+    YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
   steps:
   - task: Cache@2
     inputs:
