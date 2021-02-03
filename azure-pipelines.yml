@@ -31,10 +31,10 @@ stages:
         path: $(YARN_CACHE_FOLDER)
     - script: yarn --frozen-lockfile
       condition: ne(variables.CACHE_RESTORED, 'true')
-    - task: Yarn@0
+    - task: Npm@1
       displayName: Unit testing
     - script: yarn test
-    - task: Yarn@1
+    - task: Npm@1
       displayName: Publish to Chromatic
     - script: yarn chromatic --project-token=${CHROMATIC_PROJECT_TOKEN}
       
