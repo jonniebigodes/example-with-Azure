@@ -10,11 +10,7 @@ variables:
 
 ## OS where the pipeline will run
 pool:
-  name: Azure Pipelines
   vmImage: 'ubuntu-latest'
-   # requires npm installation
-  demands:
-  - npm
 
 # List of stages for your application
 stages:
@@ -22,29 +18,30 @@ stages:
   displayName: Application Testing
   # List of jobs the pipeline stage will run
   jobs:
-  - job: ChromaticPublish
-    displayName: Publish to Chromatic
+  - job: Install-Test-Chromatic
+    displayName: Install packages and Publish to Chromatic
     variables:
       # Sets the environment variable to cache the application packages
       npm_config_cache: $(Pipeline.Workspace)/.npm 
     # List of steps for the job
     steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '12.x'
+      displayName: 'Install Node.js'  
     - task: Cache@2
-      displayName: Install and Cache packages
+      displayName: Install and Caches packages
       inputs:
         key: 'npm | "$(Agent.OS)" | package-lock.json'
         restoreKeys: |
           npm | "$(Agent.OS)"
         path: $(npm_config_cache)
-        verbose: false
     - script: npm ci
       condition: ne(variables.CACHE_RESTORED, 'true')
+      verbose: false
     - task: Npm@1
       displayName: Publish to Chromatic
-      inputs:
-        command: custom
-        verbose: false
-        customCommand: 'npx chromatic --project-token=${CHROMATIC_PROJECT_TOKEN}'
+    - script: npx chromatic --project-token=${CHROMATIC_PROJECT_TOKEN}
 
    
 
