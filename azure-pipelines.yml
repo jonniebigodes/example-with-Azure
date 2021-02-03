@@ -22,7 +22,7 @@ stages:
     variables:
       YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn   
     steps:
-    - task: Cache@2
+    - task: Cache@0
       displayName: Install and Cache packages
       inputs:
         key: 'yarn | "$(Agent.OS)" | yarn.lock'
@@ -31,10 +31,10 @@ stages:
         path: $(YARN_CACHE_FOLDER)
     - script: yarn --frozen-lockfile
       condition: ne(variables.CACHE_RESTORED, 'true')
-    - task: UnitTesting
+    - task: Yarn@0
       displayName: Unit testing
     - script: yarn test
-    - task: Chromatic
+    - task: Yarn@1
       displayName: Publish to Chromatic
     - script: yarn chromatic --project-token=${CHROMATIC_PROJECT_TOKEN}
       
