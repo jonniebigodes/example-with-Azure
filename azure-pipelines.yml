@@ -2,12 +2,15 @@
 
 ## Event (branch to trigger the pipeline execution)
 trigger:
-# specifies which branches will run the pipeline
+- main
+
+pr:
   branches:
     include:
     - main
     exclude:
     - example
+    - example_v2
 
 # Environment variables created for Chromatic
 variables:
