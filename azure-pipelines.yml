@@ -7,6 +7,13 @@ trigger:
     - main
     exclude:
     - My-branch
+
+pr:
+  branches:
+    include:
+    - main
+    exclude:
+      - My-branch
     
 # Environment variables created for Chromatic
 variables:
