@@ -43,7 +43,6 @@ stages:
       displayName: Publish to Chromatic
       inputs:
         command: custom
-        workingDir: '$(WebProjectDirectory)'
         verbose: false
         customCommand: 'npx chromatic --project-token=${CHROMATIC_PROJECT_TOKEN}'
 
