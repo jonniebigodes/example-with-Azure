@@ -36,12 +36,16 @@ stages:
         restoreKeys: |
           npm | "$(Agent.OS)"
         path: $(npm_config_cache)
+        verbose: false
     - script: npm ci
       condition: ne(variables.CACHE_RESTORED, 'true')
-      verbose: false
     - task: Npm@1
       displayName: Publish to Chromatic
-    - script: npx chromatic --project-token=${CHROMATIC_PROJECT_TOKEN}
+      inputs:
+        command: custom
+        workingDir: '$(WebProjectDirectory)'
+        verbose: false
+        customCommand: 'npx chromatic --project-token=${CHROMATIC_PROJECT_TOKEN}'
 
    
 
