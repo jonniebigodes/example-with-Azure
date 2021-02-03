@@ -18,8 +18,8 @@ stages:
   displayName: Application Testing
   # List of jobs the pipeline stage will run
   jobs:
-  - job: Install-Test-Chromatic
-    displayName: Install packages and Publish to Chromatic
+  - job: ChromaticTesting
+    displayName: Install packages and publishes to Chromatic
     variables:
       # Sets the environment variable to cache the application packages
       npm_config_cache: $(Pipeline.Workspace)/.npm 
@@ -30,7 +30,7 @@ stages:
         versionSpec: '12.x'
       displayName: 'Install Node.js'  
     - task: Cache@2
-      displayName: Install and Caches packages
+      displayName: Install and cache packages
       inputs:
         key: 'npm | "$(Agent.OS)" | package-lock.json'
         restoreKeys: |
