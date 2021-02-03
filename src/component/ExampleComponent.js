@@ -9,6 +9,7 @@ export default function ExampleComponent({ propertyA, propertyB }) {
       <h4>{propertyA}</h4>
       <h3>I'm propertyB</h3>
       <h4>{propertyB}</h4>
+      <h4>I'm a change introduced to the component that should not trigger the pipeline</h4>
     </>
   );
 }
