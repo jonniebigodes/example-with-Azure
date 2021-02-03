@@ -12,33 +12,64 @@ variables:
 pool:
   vmImage: 'ubuntu-latest'
 
-jobs:
-- job: Install
-  displayName: Install and Cache Dependencies
-  variables:
-    YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
-  steps:
-  - task: Cache@2
-    inputs:
-      key: 'yarn | "$(Agent.OS)" | yarn.lock'
-      restoreKeys: |
-        yarn | "$(Agent.OS)"
-      path: $(YARN_CACHE_FOLDER)
-  - script: yarn --frozen-lockfile
 
-- job: Test
-  displayName: Testing job
-  dependsOn: Install
-  condition: succeeded()
-  steps:
+stages:
+- stage: Test
+  displayName: Application Testing
+  jobs:
+  - job: ChromaticTesting
+    displayName: Publish to Chromatic
+    variables:
+      YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn   
+    steps:
+    - task: Cache@2
+      displayName: Install and Cache packages
+      inputs:
+        key: 'yarn | "$(Agent.OS)" | yarn.lock'
+        restoreKeys: |
+          yarn | "$(Agent.OS)"
+        path: $(YARN_CACHE_FOLDER)
+    - script: yarn --frozen-lockfile
+      condition: ne(variables.CACHE_RESTORED, 'true')
+    - task: UnitTesting
+      displayName: Unit testing
     - script: yarn test
-      displayName: Testing
+    - task: Chromatic
+      displayName: Publish to Chromatic
+    - script: yarn chromatic --project-token=${CHROMATIC_PROJECT_TOKEN}
+      
 
-- job: Chromatic
-  displayName: Publish to Chromatic
-  dependsOn: Install
-  condition: succeeded()
-  steps:
-  - script: yarn chromatic --project-token=${CHROMATIC_PROJECT_TOKEN}
+   
+
+# jobs:
+# - job: Install
+#   displayName: Install and Cache Dependencies
+#   variables:
+#     YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
+#   steps:
+#   - task: Cache@2
+#     inputs:
+#       key: 'yarn | "$(Agent.OS)" | yarn.lock'
+#       restoreKeys: |
+#         yarn | "$(Agent.OS)"
+#       path: $(YARN_CACHE_FOLDER)
+#   - script: yarn --frozen-lockfile
+#     condition: ne(variables.CACHE_RESTORED, 'true')
+#     displayName: Cache Yarn packages
+
+# - job: Test
+#   displayName: Testing job
+#   dependsOn: Install
+#   condition: succeeded()
+#   steps:
+#     - script: yarn test
+#       displayName: Testing
+
+# - job: Chromatic
+#   displayName: Publish to Chromatic
+#   dependsOn: Install
+#   condition: succeeded()
+#   steps:
+#   - script: yarn chromatic --project-token=${CHROMATIC_PROJECT_TOKEN}
   
 
