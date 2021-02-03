@@ -2,7 +2,12 @@
 
 ## Event (branch to trigger the pipeline execution)
 trigger:
-- main
+# specifies which branches will run the pipeline
+  branches:
+    include:
+    - main
+    exclude:
+    - example
 
 # Environment variables created for Chromatic
 variables:
@@ -18,7 +23,7 @@ stages:
   displayName: Application Testing
   # List of jobs the pipeline stage will run
   jobs:
-  - job: ChromaticTesting
+  - job: Chromatic_Deploy
     displayName: Install packages and publishes to Chromatic
     variables:
       # Sets the environment variable to cache the application packages
