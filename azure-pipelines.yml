@@ -13,8 +13,8 @@ pool:
   name: Azure Pipelines
   vmImage: 'ubuntu-latest'
    # requires npm installation
-   demands:
-   - npm
+  demands:
+  - npm
 
 # List of stages for your application
 stages:
