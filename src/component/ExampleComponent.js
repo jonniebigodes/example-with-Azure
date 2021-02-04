@@ -9,6 +9,7 @@ export default function ExampleComponent({ propertyA, propertyB }) {
       <h4>{propertyA}</h4>
       <h3>I'm propertyB</h3>
       <h4>{propertyB}</h4>
+      <h3>Will i trigger a pipeline execution on main branch?Stay tuned!</h3>
     </>
   );
 }
