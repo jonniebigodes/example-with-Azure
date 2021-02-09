@@ -1,0 +1,48 @@
+## Example azure-pipelines.yml
+
+## Event (branch to trigger the pipeline execution)
+trigger:
+  branches:
+    include:
+    - main
+    exclude:
+    - example # branch that will not trigger the pipeline
+    - example_v2 # branch that will not trigger the pipeline (delete this one when documenting)
+
+# Environment variables created for Chromatic
+variables:
+- group: chromatic-keys
+
+## OS where the pipeline will run
+pool:
+  vmImage: 'ubuntu-latest'
+
+# List of stages for your application
+stages:
+- stage: Test
+  displayName: Application Testing
+  # List of jobs the pipeline stage will run
+  jobs:
+  - job: Chromatic_Deploy
+    displayName: Install packages and publishes to Chromatic
+    variables:
+      # Sets the environment variable to cache the application packages
+      npm_config_cache: $(Pipeline.Workspace)/.npm 
+    # List of steps for the job
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '12.x'
+      displayName: 'Install Node.js'  
+    - task: Cache@2
+      displayName: Install and cache packages
+      inputs:
+        key: 'npm | "$(Agent.OS)" | package-lock.json'
+        restoreKeys: |
+          npm | "$(Agent.OS)"
+        path: $(npm_config_cache)
+    - script: npm ci
+      condition: ne(variables.CACHE_RESTORED, 'true')
+    - task: Npm@1
+      displayName: Publish to Chromatic
+    - script: npx chromatic --project-token=${CHROMATIC_PROJECT_TOKEN}
