@@ -50,12 +50,12 @@ stages:
         path: $(npm_config_cache)
     - script: npm ci
       condition: ne(variables.CACHE_RESTORED, 'true')
-    - task: @CmdLine@2
+    - task: CmdLine@2
       displayName: Publish to Chromatic and auto accept changes
       condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
       inputs:
         script: npx chromatic --project-token=${CHROMATIC_PROJECT_TOKEN} --auto-accept-changes
-    - task: @CmdLine@2
+    - task: CmdLine@2
       displayName: Publish to Chromatic
       condition: eq(variables['Build.Reason'], 'PullRequest')
       inputs:
