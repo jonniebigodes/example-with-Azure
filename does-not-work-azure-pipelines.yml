@@ -50,24 +50,14 @@ stages:
         path: $(npm_config_cache)
     - script: npm ci
       condition: ne(variables.CACHE_RESTORED, 'true')
-    - task: @CmdLine@2
+    - task: Npm@1
       displayName: Publish to Chromatic and auto accept changes
       condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
-      inputs:
-        script: npx chromatic --project-token=${CHROMATIC_PROJECT_TOKEN} --auto-accept-changes
-    - task: @CmdLine@2
+    - script: npx chromatic --project-token=${CHROMATIC_PROJECT_TOKEN} --auto-accept-changes
+    - script: echo ${{variables['build.sourceBranch']}}
+    - task: Npm@1
       displayName: Publish to Chromatic
+      #condition: or(failed(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
       condition: eq(variables['Build.Reason'], 'PullRequest')
-      inputs:
-        script: npx chromatic --project-token=${CHROMATIC_PROJECT_TOKEN}
-    # - task: Npm@1
-    #   displayName: Publish to Chromatic and auto accept changes
-    #   condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
-    # - script: npx chromatic --project-token=${CHROMATIC_PROJECT_TOKEN} --auto-accept-changes
-    # - script: echo ${{variables['build.sourceBranch']}}
-    # - task: Npm@1
-    #   displayName: Publish to Chromatic
-    #   #condition: or(failed(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
-    #   condition: eq(variables['Build.Reason'], 'PullRequest')
-    # - script: npx chromatic --project-token=${CHROMATIC_PROJECT_TOKEN}
-    # - script: echo ${{variables['Build.Reason']}} ${{eq(variables['Build.Reason'], 'PullRequest')}}
+    - script: npx chromatic --project-token=${CHROMATIC_PROJECT_TOKEN}
+    - script: echo ${{variables['Build.Reason']}} ${{eq(variables['Build.Reason'], 'PullRequest')}}
